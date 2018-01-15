@@ -2,6 +2,14 @@ var map;
 
 // Create a new blank array for all the listing markers.
 var markers = [];
+var initLocations = [
+  {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
+  {title: 'Chelsea Loft', location: {lat: 40.7444883, lng: -73.9949465}},
+  {title: 'Union Square Open Floor Plan', location: {lat: 40.7347062, lng: -73.9895759}},
+  {title: 'East Village Hip Studio', location: {lat: 40.7281777, lng: -73.984377}},
+  {title: 'TriBeCa Artsy Bachelor Pad', location: {lat: 40.7195264, lng: -74.0089934}},
+  {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
+];
 
 function initMap() {
   // Create a styles array to use with the map.
@@ -72,6 +80,8 @@ function initMap() {
     }
   ];
 
+  var vm = new ViewModel();
+  ko.applyBindings(vm);
   // Constructor creates a new map - only center and zoom are required.
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 40.7413549, lng: -73.9980244},
@@ -82,14 +92,7 @@ function initMap() {
 
   // These are the real estate listings that will be shown to the user.
   // Normally we'd have these in a database instead.
-  var locations = [
-    {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
-    {title: 'Chelsea Loft', location: {lat: 40.7444883, lng: -73.9949465}},
-    {title: 'Union Square Open Floor Plan', location: {lat: 40.7347062, lng: -73.9895759}},
-    {title: 'East Village Hip Studio', location: {lat: 40.7281777, lng: -73.984377}},
-    {title: 'TriBeCa Artsy Bachelor Pad', location: {lat: 40.7195264, lng: -74.0089934}},
-    {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
-  ];
+
 
   var largeInfowindow = new google.maps.InfoWindow();
 
@@ -102,10 +105,10 @@ function initMap() {
   var highlightedIcon = makeMarkerIcon('FFFF24');
 
   // The following group uses the location array to create an array of markers on initialize.
-  for (var i = 0; i < locations.length; i++) {
+  for (var i = 0; i < vm.locations().length; i++) {
     // Get the position from the location array.
-    var position = locations[i].location;
-    var title = locations[i].title;
+    var position = vm.locations()[i].position.get(); 
+    var title = vm.locations()[i].title;
     // Create a marker per location, and put into markers array.
     var marker = new google.maps.Marker({
       position: position,
@@ -213,4 +216,22 @@ function makeMarkerIcon(markerColor) {
   return markerImage;
 }
 
+var Position = function(data) {
+  this.lat = data.lat;
+  this.lng = data.lng;
+  this.get = function() {
+    return {lat: this.lat, lng: this.lng};
+  }
+}
+var Location = function(data) {
+  this.title = data.title;
+  this.position = new Position(data.location);
+}
 
+var ViewModel = function() {
+  var self = this;
+  this.locations = ko.observableArray([]);
+  initLocations.forEach(function(loc) {
+    self.locations().push(new Location(loc)); 
+  })
+}
