@@ -58,8 +58,7 @@ hr {
     height: 200px;
 }
 
-#places-search,
-#search-within-time-text {
+#filter-text {
     width: 84%;
 }
 
