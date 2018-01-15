@@ -18,7 +18,7 @@
           <input id="filter" type="button" value="Filter">
         </div>
         <hr>
-        <ul id="location-list" data-bind="foreach: locations">
+        <ul id="location-list" data-bind="foreach: markers">
           <div>
           <a href="#" data-bind="text: $data.title, click: $parent.selectloc"></a>
           </div>

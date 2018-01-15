@@ -237,6 +237,7 @@ var ViewModel = function() {
       this.setIcon(defaultIcon);
     });
   }
-  this.selectloc = function(data) {
+  self.selectloc = function(data) {
+    populateInfoWindow(data, largeInfowindow);
   }
 }
