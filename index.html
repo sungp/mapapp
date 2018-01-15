@@ -7,10 +7,6 @@
     <div class="container">
       <div class="options-box">
         <h1>Find Your New NYC Home</h1>
-        <div>
-          <input id="show-listings" type="button" value="Show Listings">
-          <input id="hide-listings" type="button" value="Hide Listings">
-        </div>
         <hr>
         <div>
           <span class="text">Filter Your Locations</span>
@@ -18,7 +14,7 @@
           <input id="filter" type="button" value="Filter">
         </div>
         <hr>
-        <ul id="location-list" data-bind="foreach: markers">
+        <ul id="location-list" data-bind="foreach: filteredMarkers">
           <div>
           <a href="#" data-bind="text: $data.title, click: $parent.selectloc"></a>
           </div>

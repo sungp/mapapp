@@ -15,10 +15,8 @@ function initMap() {
   vm = new ViewModel();
   ko.applyBindings(vm);
   // Constructor creates a new map - only center and zoom are required.
-  map = new google.maps.Map(document.getElementById('map'), vm.option); 
-
-  document.getElementById('show-listings').addEventListener('click', showListings);
-  document.getElementById('hide-listings').addEventListener('click', hideListings);
+  //document.getElementById('show-listings').addEventListener('click', showListings);
+  //document.getElementById('hide-listings').addEventListener('click', hideListings);
 
 }
 
@@ -68,17 +66,6 @@ function populateInfoWindow(marker, infowindow) {
   }
 }
 
-// This function will loop through the markers array and display them all.
-function showListings() {
-  var bounds = new google.maps.LatLngBounds();
-  // Extend the boundaries of the map for each marker and display the marker
-  for (var i = 0; i < vm.markers().length; i++) {
-    vm.markers()[i].setMap(map);
-    bounds.extend(vm.markers()[i].position);
-  }
-  map.fitBounds(bounds);
-}
-
 // This function will loop through the listings and hide them all.
 function hideListings() {
   for (var i = 0; i < vm.markers.length; i++) {
@@ -114,6 +101,7 @@ var Location = function(data) {
 
 var ViewModel = function() {
   var self = this;
+
     // Create a styles array to use with the map.
   this.styles = [
     {
@@ -194,10 +182,14 @@ var ViewModel = function() {
     mapTypeControl: false
   }
 
+  this.map = new google.maps.Map(document.getElementById('map'), this.option); 
+  this.bounds = new google.maps.LatLngBounds();
+
     // These are the real estate listings that will be shown to the user.
   // Normally we'd have these in a database instead.
 
   this.markers = ko.observableArray([]);
+  this.filteredMarkers = ko.observableArray([]);
 
   var largeInfowindow = new google.maps.InfoWindow();
 
@@ -237,7 +229,25 @@ var ViewModel = function() {
       this.setIcon(defaultIcon);
     });
   }
-  self.selectloc = function(data) {
+  this.selectloc = function(data) {
     populateInfoWindow(data, largeInfowindow);
   }
+
+  this.showListing = function() {
+    for (var i = 0; i < self.filteredMarkers().length; i++) {
+      self.markers()[i].setMap(self.map);
+      self.bounds.extend(self.filteredMarkers()[i].position);
+    }
+    self.map.fitBounds(self.bounds);
+  }
+
+  this.filterListing = function(filter) {
+    self.filteredMarkers.removeAll();
+    self.markers().forEach(function(marker) {
+
+      self.filteredMarkers.push(marker);
+    });
+    self.showListing();
+  }
+  this.filterListing("");
 }
