@@ -237,4 +237,6 @@ var ViewModel = function() {
       this.setIcon(defaultIcon);
     });
   }
+  this.selectloc = function(data) {
+  }
 }
