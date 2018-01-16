@@ -66,13 +66,6 @@ function populateInfoWindow(marker, infowindow) {
   }
 }
 
-// This function will loop through the listings and hide them all.
-function hideListings() {
-  for (var i = 0; i < vm.markers.length; i++) {
-    vm.markers[i].setMap(null);
-  }
-}
-
 // This function takes in a COLOR, and then creates a new marker
 // icon of that color. The icon will be 21 px wide by 34 high, have an origin
 // of 0, 0 and be anchored at 10, 34).
@@ -102,7 +95,7 @@ var Location = function(data) {
 var ViewModel = function() {
   var self = this;
 
-    // Create a styles array to use with the map.
+  // Create a styles array to use with the map.
   this.styles = [
     {
       featureType: 'water',
@@ -185,7 +178,7 @@ var ViewModel = function() {
   this.map = new google.maps.Map(document.getElementById('map'), this.option); 
   this.bounds = new google.maps.LatLngBounds();
 
-    // These are the real estate listings that will be shown to the user.
+  // These are the real estate listings that will be shown to the user.
   // Normally we'd have these in a database instead.
 
   this.markers = ko.observableArray([]);
@@ -217,7 +210,7 @@ var ViewModel = function() {
     self.markers.push(marker);
     // Create an onclick event to open the large infowindow at each marker.
     marker.addListener('click', function() {
-      populateInfoWindow(this, largeInfowindow);
+      self.selectloc(this); 
     });
     // Two event listeners - one for mouseover, one for mouseout,
     // to change the colors back and forth.
@@ -228,12 +221,18 @@ var ViewModel = function() {
       this.setIcon(defaultIcon);
     });
   }
-  this.selectloc = function(data) {
-    populateInfoWindow(data, largeInfowindow);
+  
+  this.selectloc = function(marker) {
+    populateInfoWindow(marker, largeInfowindow);
+    if (marker.getAnimation() !== null) {
+      marker.setAnimation(null);
+    } 
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+    setTimeout(function(){ marker.setAnimation(null); }, 750);
   }
 
   this.filter = ko.observable("");
-  
+
   this.showListing = function() {
     self.filter(document.getElementById("filter-text").value);
     self.markers().forEach(function(marker) {
