@@ -1,6 +1,3 @@
-var map;
-var vm;
-
 // Create a new blank array for all the listing markers.
 var initLocations = [
   {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
@@ -14,9 +11,6 @@ var initLocations = [
 function initMap() {
   vm = new ViewModel();
   ko.applyBindings(vm);
-  // Constructor creates a new map - only center and zoom are required.
-  //document.getElementById('show-listings').addEventListener('click', showListings);
-  //document.getElementById('hide-listings').addEventListener('click', hideListings);
 
 }
 
