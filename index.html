@@ -11,7 +11,7 @@
         <div>
           <span class="text">Filter Your Locations</span>
           <input id="filter-text" type="text" placeholder="filter">
-          <input id="filter" type="button" value="Filter">
+          <input id="filter" type="button" value="Filter" data-bind="click: showListing">
         </div>
         <hr>
         <ul id="location-list" data-bind="foreach: filteredMarkers">

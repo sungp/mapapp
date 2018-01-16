@@ -189,7 +189,6 @@ var ViewModel = function() {
   // Normally we'd have these in a database instead.
 
   this.markers = ko.observableArray([]);
-  this.filteredMarkers = ko.observableArray([]);
 
   var largeInfowindow = new google.maps.InfoWindow();
 
@@ -233,21 +232,31 @@ var ViewModel = function() {
     populateInfoWindow(data, largeInfowindow);
   }
 
+  this.filter = ko.observable("");
+  
   this.showListing = function() {
-    for (var i = 0; i < self.filteredMarkers().length; i++) {
-      self.markers()[i].setMap(self.map);
-      self.bounds.extend(self.filteredMarkers()[i].position);
-    }
-    self.map.fitBounds(self.bounds);
-  }
-
-  this.filterListing = function(filter) {
-    self.filteredMarkers.removeAll();
+    self.filter(document.getElementById("filter-text").value);
     self.markers().forEach(function(marker) {
-
-      self.filteredMarkers.push(marker);
+      marker.setMap(null);
     });
-    self.showListing();
+    self.filteredMarkers().forEach(function(marker) { 
+      marker.setMap(self.map);
+      self.bounds.extend(marker.position);
+    });
+    self.map.fitBounds(self.bounds) ;
   }
-  this.filterListing("");
+
+
+  this.filteredMarkers = ko.computed(function() {
+    var filter = self.filter().toLowerCase();
+    if (!filter) {
+      return self.markers();
+    } else {
+      return ko.utils.arrayFilter(self.markers(), function(marker) {
+        return marker.title.toLowerCase().startsWith(filter);
+      });
+    }
+  });
+
+  this.showListing();
 }
