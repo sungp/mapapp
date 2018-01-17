@@ -289,7 +289,7 @@ var ViewModel = function() {
       return self.markers();
     } else {
       return ko.utils.arrayFilter(self.markers(), function(marker) {
-        return marker.title.toLowerCase().startsWith(filter);
+        return marker.title.toLowerCase().indexOf(filter) != -1;
       });
     }
   });
