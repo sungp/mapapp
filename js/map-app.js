@@ -131,9 +131,12 @@ var Position = function(data) {
     return {lat: this.lat, lng: this.lng};
   }
 }
-var Location = function(data) {
+
+var Location = function(data, marker) {
   this.title = data.title;
   this.position = new Position(data.location);
+  this.id = data.foursquare_id;
+  this.marker = marker;
 }
 
 var ViewModel = function() {
@@ -208,10 +211,6 @@ var ViewModel = function() {
   ];
 
 
-  this.locations = ko.observableArray([]);
-  initLocations.forEach(function(loc) {
-    self.locations().push(new Location(loc)); 
-  })
   this.option = {
     center: {lat: 36.3614749, lng: -122.023054},
     zoom: 13,
@@ -225,10 +224,7 @@ var ViewModel = function() {
   // These are the real estate listings that will be shown to the user.
   // Normally we'd have these in a database instead.
 
-  this.markers = ko.observableArray([]);
-
   var largeInfowindow = new google.maps.InfoWindow();
-
 
   // Style the markers a bit. This will be our listing marker icon.
   var defaultIcon = makeMarkerIcon('0091ff');
@@ -237,21 +233,20 @@ var ViewModel = function() {
   // mouses over the marker.
   var highlightedIcon = makeMarkerIcon('FFFF24');
 
+  this.locations = ko.observableArray([]);
   // The following group uses the location array to create an array of markers on initialize.
-  for (var i = 0; i < self.locations().length; i++) {
+  initLocations.forEach(function(location, index) {
     // Get the position from the location array.
-    var position = self.locations()[i].position.get(); 
-    var title = self.locations()[i].title;
+    var position = location.location;
+    var title = location.title;
     // Create a marker per location, and put into markers array.
     var marker = new google.maps.Marker({
       position: position,
       title: title,
       animation: google.maps.Animation.DROP,
       icon: defaultIcon,
-      id: i
+      id: index
     });
-    // Push the marker to our array of markers.
-    self.markers.push(marker);
     // Create an onclick event to open the large infowindow at each marker.
     marker.addListener('click', function() {
       self.selectloc(this); 
@@ -264,39 +259,40 @@ var ViewModel = function() {
     marker.addListener('mouseout', function() {
       this.setIcon(defaultIcon);
     });
-  }
+    self.locations().push(new Location(location, marker)); 
+  });
 
-  this.selectloc = function(marker) {
-    populateInfoWindow(marker, largeInfowindow);
-    if (marker.getAnimation() !== null) {
-      marker.setAnimation(null);
+  this.selectloc = function(location) {
+    populateInfoWindow(location.marker, largeInfowindow);
+    if (location.marker.getAnimation() !== null) {
+      location.marker.setAnimation(null);
     } 
-    marker.setAnimation(google.maps.Animation.BOUNCE);
-    setTimeout(function(){ marker.setAnimation(null); }, 750);
+    location.marker.setAnimation(google.maps.Animation.BOUNCE);
+    setTimeout(function(){ location.marker.setAnimation(null); }, 750);
   }
 
   this.filter = ko.observable("");
 
   this.showListing = function() {
     self.filter(document.getElementById("filter-text").value);
-    self.markers().forEach(function(marker) {
-      marker.setMap(null);
+    self.locations().forEach(function(location) {
+      location.marker.setMap(null);
     });
-    self.filteredMarkers().forEach(function(marker) { 
-      marker.setMap(self.map);
-      self.bounds.extend(marker.position);
+    self.filteredLocations().forEach(function(location) { 
+      location.marker.setMap(self.map);
+      self.bounds.extend(location.marker.position);
     });
     self.map.fitBounds(self.bounds) ;
   }
 
 
-  this.filteredMarkers = ko.computed(function() {
+  this.filteredLocations = ko.computed(function() {
     var filter = self.filter().toLowerCase();
     if (!filter) {
-      return self.markers();
+      return self.locations();
     } else {
-      return ko.utils.arrayFilter(self.markers(), function(marker) {
-        return marker.title.toLowerCase().indexOf(filter) != -1;
+      return ko.utils.arrayFilter(self.locations(), function(location) {
+        return location.marker.title.toLowerCase().indexOf(filter) != -1;
       });
     }
   });
