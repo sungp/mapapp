@@ -1,4 +1,8 @@
-// Create a new blank array for all the listing markers.
+var apiURL = 'https://api.foursquare.com/v2/venues/';
+var foursquareClientID = 'AQHSVDVH53ETI0XQS0JSTDA2QLFRETMK3W0B0B3WSM1UBYYD'
+var foursquareSecret ='ZF3JNUQDY0HXQE20P3JL5BHGI1TURIA0YNU4NGPYUY4EXNHX';
+var foursquareVersion = '20180118';
+
 var initLocations = [
   {
     "title": 'Pfeiffer Big Sur State Park',
@@ -6,7 +10,7 @@ var initLocations = [
       "lat" : 36.2128022,
       "lng" : -121.5860687
     },
-    "foursqaure_id": "4c23e083b012b713e45e0893",
+    "foursquare_id": "4c23e083b012b713e45e0893",
   },
   {
     "title": "Julia Pfeiffer Burns State Park", 
@@ -14,7 +18,7 @@ var initLocations = [
       "lat" : 36.1691714,
       "lng" : -121.671498
     },
-    "foursqaure_id": "4bbd305207809521535dda91",
+    "foursquare_id": "4bbd305207809521535dda91",
   },
   {
     "title": "Pfeiffer Beach", 
@@ -22,7 +26,7 @@ var initLocations = [
       "lat" : 36.2380659,
       "lng" : -121.816232
     },
-    "foursqaure_id": "4bc3a47ef8219c749c66b610",
+    "foursquare_id": "4bc3a47ef8219c749c66b610",
   },
   {
     "title": "Limekiln State Park",
@@ -30,7 +34,7 @@ var initLocations = [
       "lat" : 36.0200429,
       "lng" : -121.5224711
     },
-    "foursqaure_id": "4c252aa1c9bbef3bd166afac",
+    "foursquare_id": "4c252aa1c9bbef3bd166afac",
   },
   {
     "title": "Andrew Molera State Park",
@@ -38,7 +42,7 @@ var initLocations = [
       "lat" : 36.2884189,
       "lng" : -121.844272
     },
-    "foursqaure_id": "4c212c25497cb71369ad6cd8",
+    "foursquare_id": "4c212c25497cb71369ad6cd8",
   },
   {
     "title": "Garrapata State Park", 
@@ -46,7 +50,7 @@ var initLocations = [
       "lat" : 36.4679829,
       "lng" : -121.9074861
     },
-    "foursqaure_id": "4c252aa1c9bbef3bd166afac",
+    "foursquare_id": "4c252aa1c9bbef3bd166afac",
   },    
   {
     "title": "Point Lobos State Natural Reserve",
@@ -54,7 +58,7 @@ var initLocations = [
       "lat" : 36.5159123,
       "lng" : -121.9422821
     },
-    "foursqaure_id": "4bc2609474a9a5935d46d3f6",
+    "foursquare_id": "4bc2609474a9a5935d46d3f6",
   },    
 ];
 
@@ -67,7 +71,7 @@ function initMap() {
 // This function populates the infowindow when the marker is clicked. We'll only allow
 // one infowindow which will open at the marker that is clicked, and populate based
 // on that markers position.
-function populateInfoWindow(marker, infowindow) {
+function populateInfoWindow(marker, infowindow, id) {
   // Check to make sure the infowindow is not already opened on this marker.
   if (infowindow.marker != marker) {
     // Clear the infowindow content to give the streetview time to load.
@@ -99,12 +103,32 @@ function populateInfoWindow(marker, infowindow) {
           document.getElementById('pano'), panoramaOptions);
       } else {
         infowindow.setContent('<div>' + marker.title + '</div>' +
-          '<div>No Street View Found</div>');
+          '<div>No Street View Found</div>')
       }
     }
     // Use streetview service to get the closest streetview image within
     // 50 meters of the markers position
-    streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+    //streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+
+    var foursquareURL = apiURL + id + '?client_id=' + foursquareClientID +  '&client_secret=' + foursquareSecret +'&v=' + foursquareVersion;
+
+    $.ajax({
+      url: foursquareURL, 
+      success: function(data) {
+
+        //infowindow.setContent('<div>' + marker.title + '</div><div id="best_photo"></div>');
+        var div = document.createElement('div');
+        var bestPhoto = document.createElement('img');
+        var photoJson = data.response.venue.bestPhoto
+        bestPhoto.src = photoJson.prefix + "300x500" + photoJson.suffix; 
+        //document.getElementById('best_photo').appendChild(bestPhoto);
+        div.appendChild(bestPhoto);
+        infowindow.setContent(div.innerHTML);
+        console.log(div.innerHTML);
+        console.log(data);
+      } 
+    });
+
     // Open the infowindow on the correct marker.
     infowindow.open(map, marker);
   }
@@ -263,7 +287,7 @@ var ViewModel = function() {
   });
 
   this.selectloc = function(location) {
-    populateInfoWindow(location.marker, largeInfowindow);
+    populateInfoWindow(location.marker, largeInfowindow, location.id);
     if (location.marker.getAnimation() !== null) {
       location.marker.setAnimation(null);
     } 
