@@ -4,6 +4,7 @@ Documentation
 This repository contains a fully functional webapp that displays location
 information about state parks along Big Sur.  The location information is
 collected using google API (marker) and Foursquare (picture and rating). 
+The app makes use of jQuery and Knockout library.
 
 Installing/Running the app
 --------------------------------
