@@ -1,5 +1,5 @@
 var apiURL = 'https://api.foursquare.com/v2/venues/';
-var foursquareClientID = 'AQHSVDVH53ETI0XQS0JSTDA2QLFRETMK3W0B0B3WSM1UBYYD'
+var foursquareClientID = 'AQHSVDVH53ETI0XQS0JSTDA2QLFRETMK3W0B0B3WSM1UBYYD';
 var foursquareSecret ='ZF3JNUQDY0HXQE20P3JL5BHGI1TURIA0YNU4NGPYUY4EXNHX';
 var foursquareVersion = '20180118';
 
@@ -73,15 +73,15 @@ var Position = function(data) {
   this.lng = data.lng;
   this.get = function() {
     return {lat: this.lat, lng: this.lng};
-  }
-}
+  };
+};
 
 var Location = function(data, marker) {
   this.title = data.title;
   this.position = new Position(data.location);
   this.id = data.foursquare_id;
   this.marker = marker;
-}
+};
 
 var ViewModel = function() {
   var self = this;
@@ -159,7 +159,7 @@ var ViewModel = function() {
     zoom: 13,
     styles: self.styles,
     mapTypeControl: false
-  }
+  };
 
   this.map = new google.maps.Map(document.getElementById('map'), this.option); 
   this.bounds = new google.maps.LatLngBounds();
@@ -176,7 +176,7 @@ var ViewModel = function() {
       new google.maps.Point(10, 34),
       new google.maps.Size(21,34));
     return markerImage;
-  }
+  };
 
   // These are the real estate listings that will be shown to the user.
   // Normally we'd have these in a database instead.
@@ -214,14 +214,14 @@ var ViewModel = function() {
           var bestPhotoDiv = document.getElementById('best_photo');
           var ratingDiv = document.getElementById('rating');
           var bestPhoto = document.createElement('img');
-          var photoJson = data.response.venue.bestPhoto
+          var photoJson = data.response.venue.bestPhoto;
           bestPhoto.src = photoJson.prefix + "200x100" + photoJson.suffix; 
           var markerLink = document.createElement('a');
           markerLink.textContent = marker.title;
           markerLink.href = data.response.venue.shortUrl;
           bestPhotoDiv.appendChild(bestPhoto);
           markerLinkDiv.appendChild(markerLink);
-          var ratingStr = (data.response.venue.rating != null) ? 
+          var ratingStr = (data.response.venue.rating !== null) ? 
             "rating: " + data.response.venue.rating + "/10" :
             "rating: no rating yet";
           ratingDiv.textContent = ratingStr; 
@@ -235,7 +235,7 @@ var ViewModel = function() {
       // Open the infowindow on the correct marker.
       infowindow.open(map, marker);
     }
-  }
+  };
 
   this.locations = ko.observableArray([]);
   // The following group uses the location array to create an array of markers on initialize.
@@ -273,7 +273,7 @@ var ViewModel = function() {
     } 
     location.marker.setAnimation(google.maps.Animation.BOUNCE);
     setTimeout(function(){ location.marker.setAnimation(null); }, 750);
-  }
+  };
 
   this.filter = ko.observable("");
 
@@ -287,7 +287,7 @@ var ViewModel = function() {
       self.bounds.extend(location.marker.position);
     });
     self.map.fitBounds(self.bounds) ;
-  }
+  };
 
 
   this.filteredLocations = ko.computed(function() {
@@ -302,4 +302,4 @@ var ViewModel = function() {
   });
 
   this.showListing();
-}
+};
