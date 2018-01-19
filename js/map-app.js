@@ -71,7 +71,7 @@ function initMap() {
 // This function populates the infowindow when the marker is clicked. We'll only allow
 // one infowindow which will open at the marker that is clicked, and populate based
 // on that markers position.
-function populateInfoWindow(marker, infowindow, id) {
+/*function populateInfoWindow(marker, infowindow, id) {
   // Check to make sure the infowindow is not already opened on this marker.
   if (infowindow.marker != marker) {
     // Clear the infowindow content to give the streetview time to load.
@@ -83,7 +83,7 @@ function populateInfoWindow(marker, infowindow, id) {
     });
 
     var foursquareURL = apiURL + id + '?client_id=' + foursquareClientID +  '&client_secret=' + foursquareSecret +'&v=' + foursquareVersion;
-    
+
     $.ajax({
       url: foursquareURL, 
       success: function(data) {
@@ -105,13 +105,13 @@ function populateInfoWindow(marker, infowindow, id) {
       error: function() {
         infowindow.setContent('<div>Service Temporary Unavailable.</div><div>Please Try Again Later.</div>');
       }
-  
+
     });
 
     // Open the infowindow on the correct marker.
     infowindow.open(map, marker);
   }
-}
+}*/
 
 // This function takes in a COLOR, and then creates a new marker
 // icon of that color. The icon will be 21 px wide by 34 high, have an origin
@@ -236,6 +236,51 @@ var ViewModel = function() {
   // mouses over the marker.
   var highlightedIcon = makeMarkerIcon('FFFF24');
 
+  // This function populates the infowindow when the marker is clicked. We'll only allow
+  // one infowindow which will open at the marker that is clicked, and populate based
+  // on that markers position.
+  this.populateInfoWindow = function(marker, infowindow, id) {
+    // Check to make sure the infowindow is not already opened on this marker.
+    if (infowindow.marker != marker) {
+      // Clear the infowindow content to give the streetview time to load.
+      infowindow.setContent('');
+      infowindow.marker = marker;
+      // Make sure the marker property is cleared if the infowindow is closed.
+      infowindow.addListener('closeclick', function() {
+        infowindow.marker = null;
+      });
+
+      var foursquareURL = apiURL + id + '?client_id=' + foursquareClientID +  '&client_secret=' + foursquareSecret +'&v=' + foursquareVersion;
+
+      $.ajax({
+        url: foursquareURL, 
+        success: function(data) {
+
+          infowindow.setContent('<div id="marker_link"></div><div id="best_photo"></div><div id="rating"></div><img src="img/Powered-by-Foursquare-full-color-small.png"></img>');
+          var markerLinkDiv = document.getElementById('marker_link');
+          var bestPhotoDiv = document.getElementById('best_photo');
+          var ratingDiv = document.getElementById('rating');
+          var bestPhoto = document.createElement('img');
+          var photoJson = data.response.venue.bestPhoto
+          bestPhoto.src = photoJson.prefix + "200x100" + photoJson.suffix; 
+          var markerLink = document.createElement('a');
+          markerLink.textContent = marker.title;
+          markerLink.href = data.response.venue.shortUrl;
+          bestPhotoDiv.appendChild(bestPhoto);
+          markerLinkDiv.appendChild(markerLink);
+          ratingDiv.textContent = "rating: " + data.response.venue.rating + "/10";
+        },
+        error: function() {
+          infowindow.setContent('<div>Service Temporary Unavailable.</div><div>Please Try Again Later.</div>');
+        }
+
+      });
+
+      // Open the infowindow on the correct marker.
+      infowindow.open(map, marker);
+    }
+  }
+
   this.locations = ko.observableArray([]);
   // The following group uses the location array to create an array of markers on initialize.
   initLocations.forEach(function(location, index) {
@@ -266,7 +311,7 @@ var ViewModel = function() {
   });
 
   this.selectloc = function(location) {
-    populateInfoWindow(location.marker, largeInfowindow, location.id);
+    self.populateInfoWindow(location.marker, largeInfowindow, location.id);
     if (location.marker.getAnimation() !== null) {
       location.marker.setAnimation(null);
     } 
