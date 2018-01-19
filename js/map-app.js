@@ -81,37 +81,9 @@ function populateInfoWindow(marker, infowindow, id) {
     infowindow.addListener('closeclick', function() {
       infowindow.marker = null;
     });
-    var streetViewService = new google.maps.StreetViewService();
-    var radius = 50;
-    // In case the status is OK, which means the pano was found, compute the
-    // position of the streetview image, then calculate the heading, then get a
-    // panorama from that and set the options
-    function getStreetView(data, status) {
-      if (status == google.maps.StreetViewStatus.OK) {
-        var nearStreetViewLocation = data.location.latLng;
-        var heading = google.maps.geometry.spherical.computeHeading(
-          nearStreetViewLocation, marker.position);
-        infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
-        var panoramaOptions = {
-          position: nearStreetViewLocation,
-          pov: {
-            heading: heading,
-            pitch: 30
-          }
-        };
-        var panorama = new google.maps.StreetViewPanorama(
-          document.getElementById('pano'), panoramaOptions);
-      } else {
-        infowindow.setContent('<div>' + marker.title + '</div>' +
-          '<div>No Street View Found</div>')
-      }
-    }
-    // Use streetview service to get the closest streetview image within
-    // 50 meters of the markers position
-    //streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
 
     var foursquareURL = apiURL + id + '?client_id=' + foursquareClientID +  '&client_secret=' + foursquareSecret +'&v=' + foursquareVersion;
-
+    
     $.ajax({
       url: foursquareURL, 
       success: function(data) {
@@ -126,13 +98,14 @@ function populateInfoWindow(marker, infowindow, id) {
         var markerLink = document.createElement('a');
         markerLink.textContent = marker.title;
         markerLink.href = data.response.venue.shortUrl;
-        //document.getElementById('best_photo').appendChild(bestPhoto);
         bestPhotoDiv.appendChild(bestPhoto);
         markerLinkDiv.appendChild(markerLink);
         ratingDiv.textContent = "rating: " + data.response.venue.rating + "/10";
-        //console.log(div.innerHTML);
-        console.log(data);
-      } 
+      },
+      error: function() {
+        infowindow.setContent('<div>Service Temporary Unavailable.</div><div>Please Try Again Later.</div>');
+      }
+  
     });
 
     // Open the infowindow on the correct marker.
