@@ -68,8 +68,6 @@ function initMap() {
 
 }
 
-
-
 var Position = function(data) {
   this.lat = data.lat;
   this.lng = data.lng;
@@ -156,7 +154,6 @@ var ViewModel = function() {
     }
   ];
 
-
   this.option = {
     center: {lat: 36.3614749, lng: -122.023054},
     zoom: 13,
@@ -180,6 +177,7 @@ var ViewModel = function() {
       new google.maps.Size(21,34));
     return markerImage;
   }
+
   // These are the real estate listings that will be shown to the user.
   // Normally we'd have these in a database instead.
   var largeInfowindow = new google.maps.InfoWindow();
