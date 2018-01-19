@@ -116,15 +116,21 @@ function populateInfoWindow(marker, infowindow, id) {
       url: foursquareURL, 
       success: function(data) {
 
-        //infowindow.setContent('<div>' + marker.title + '</div><div id="best_photo"></div>');
-        var div = document.createElement('div');
+        infowindow.setContent('<div id="marker_link"></div><div id="best_photo"></div><div id="rating"></div><img src="img/Powered-by-Foursquare-full-color-small.png"></img>');
+        var markerLinkDiv = document.getElementById('marker_link');
+        var bestPhotoDiv = document.getElementById('best_photo');
+        var ratingDiv = document.getElementById('rating');
         var bestPhoto = document.createElement('img');
         var photoJson = data.response.venue.bestPhoto
-        bestPhoto.src = photoJson.prefix + "300x500" + photoJson.suffix; 
+        bestPhoto.src = photoJson.prefix + "200x100" + photoJson.suffix; 
+        var markerLink = document.createElement('a');
+        markerLink.textContent = marker.title;
+        markerLink.href = data.response.venue.shortUrl;
         //document.getElementById('best_photo').appendChild(bestPhoto);
-        div.appendChild(bestPhoto);
-        infowindow.setContent(div.innerHTML);
-        console.log(div.innerHTML);
+        bestPhotoDiv.appendChild(bestPhoto);
+        markerLinkDiv.appendChild(markerLink);
+        ratingDiv.textContent = "rating: " + data.response.venue.rating + "/10";
+        //console.log(div.innerHTML);
         console.log(data);
       } 
     });
