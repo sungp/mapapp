@@ -65,7 +65,10 @@ var initLocations = [
 function initMap() {
   vm = new ViewModel();
   ko.applyBindings(vm);
+}
 
+function googleError() {
+  alert("google map service is temporary unavailable. please check back again later");
 }
 
 var Position = function(data) {
@@ -208,23 +211,13 @@ var ViewModel = function() {
       $.ajax({
         url: foursquareURL, 
         success: function(data) {
-
-          infowindow.setContent('<div id="marker_link"></div><div id="best_photo"></div><div id="rating"></div><img src="img/Powered-by-Foursquare-full-color-small.png"></img>');
-          var markerLinkDiv = document.getElementById('marker_link');
-          var bestPhotoDiv = document.getElementById('best_photo');
-          var ratingDiv = document.getElementById('rating');
-          var bestPhoto = document.createElement('img');
-          var photoJson = data.response.venue.bestPhoto;
-          bestPhoto.src = photoJson.prefix + "200x100" + photoJson.suffix; 
-          var markerLink = document.createElement('a');
-          markerLink.textContent = marker.title;
-          markerLink.href = data.response.venue.shortUrl;
-          bestPhotoDiv.appendChild(bestPhoto);
-          markerLinkDiv.appendChild(markerLink);
-          var ratingStr = (data.response.venue.rating !== null) ? 
-            "rating: " + data.response.venue.rating + "/10" :
-            "rating: no rating yet";
-          ratingDiv.textContent = ratingStr; 
+          var venue = data.response.venue;
+          var content = '<div><a href="' + venue.shortUrl + '">' + venue.name + '</a></div>';
+          var bestPhotoSrc = venue.bestPhoto.prefix + "200x100" + venue.bestPhoto.suffix; 
+          var ratingStr = (venue.rating) ? "rating: " + venue.rating + "/10" : "rating: no rating yet";
+          content = content + '<div><img src="' + bestPhotoSrc + '"></div>'; 
+          content = content + '<div>' + ratingStr + '</dvi>';
+          infowindow.setContent(content);
         },
         error: function() {
           infowindow.setContent('<div>Service Temporary Unavailable.</div><div>Please Try Again Later.</div>');
