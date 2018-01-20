@@ -1,33 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
   <head>
+
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Simple Sidebar - Start Bootstrap Template</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
     <link href="css/map-sidebar.css" rel="stylesheet">
+
   </head>
+
   <body>
-    <div class="container">
-      <div class="options-box">
-        <h2>Find Your Big Sur Parks</h2>
-        <hr>
-        <div>
-          <span class="text">Filter Your Locations</span>
-          <input id="filter-text" data-bind="textInput: filterKeyword" autofocus>
-        </div>
-        <hr>
-        <ul id="location-list" data-bind="foreach: filteredLocations">
-          <div>
-          <a href="#" data-bind="text: $data.title, click: $parent.selectloc"></a>
-          </div>
+
+    <div id="wrapper">
+
+      <!-- Sidebar -->
+      <div id="sidebar-wrapper">
+        <ul id="sidebar-view" class="sidebar-nav">
+          <li class="sidebar-brand">
+            <a href="#">
+              Find Your Big Sur Parks 
+            </a>
+          </li>
+          <hr>
+          <li>
+            <a href="#">Filter Your Locations</a>
+            <input id="filter-text" data-bind="textInput: filterKeyword" autofocus>
+          </li>
+          <hr>
+          <ul id="location-list" data-bind="foreach: filteredLocations">
+            <div>
+              <a href="#" data-bind="text: $data.title, click: $parent.selectloc"></a>
+            </div>
+          </ul>
         </ul>
       </div>
-      <div id="map"></div>
+      <!-- /#sidebar-wrapper -->
+
+      <!-- Page Content -->
+      <a href="#menu-toggle" class="btn btn-secondary btn-sm" id="menu-toggle">Toggle Menu</a>
+      <div id="map" class="wrapper"></div>
     </div>
+    <!-- /#wrapper -->
+
+    <!-- Bootstrap core JavaScript -->
     <script src="js/lib/knockout-3.4.2.js"></script>
     <script src="js/lib/jquery.min.js"></script>
     <script src="js/locations.js"></script>
     <script src="js/map-app.js"></script>
+    <script src="js/menu-toggle.js"></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBYxA2uoPXKkTfmlqjMQYjZ6ZEiU-I6Bew&v=3&callback=initMap" onerror="googleError()">
     </script>
 
+    <!-- Menu Toggle Script -->
+
   </body>
+
 </html>
