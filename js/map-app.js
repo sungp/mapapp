@@ -212,11 +212,19 @@ var ViewModel = function() {
         url: foursquareURL, 
         success: function(data) {
           var venue = data.response.venue;
-          var content = '<div><a href="' + venue.shortUrl + '">' + venue.name + '</a></div>';
-          var bestPhotoSrc = venue.bestPhoto.prefix + "200x100" + venue.bestPhoto.suffix; 
-          var ratingStr = (venue.rating) ? "rating: " + venue.rating + "/10" : "rating: no rating yet";
-          content = content + '<div><img src="' + bestPhotoSrc + '"></div>'; 
-          content = content + '<div>' + ratingStr + '</dvi>';
+          var content = '<div> No Info on this location</div>';
+          if (venue) {
+            var nameLink  = (venue.name) ? '<a href="' + venue.shortUrl + '">' + venue.name + '</a>' : 'No Venue Name Is Available';
+            var bestPhotoSrc =
+              (venue.bestPhoto && venue.bestPhoto.prefix && venue.bestPhoto.suffix) ? 
+                '<img src="' + venue.bestPhoto.prefix + "200x100" + venue.bestPhoto.suffix + '"/>': 
+                'No Image Is Available';
+            var ratingStr = (venue.rating) ? "rating: " + venue.rating + "/10" : "rating: no rating yet";
+            content = '<div>' + nameLink + '</div>';
+            content = content + '<div>' + bestPhotoSrc + '</div>'; 
+            content = content + '<div>' + ratingStr + '</div>';
+          }
+          content = content + '<img src="img/Powered-by-Foursquare-full-color-small.png"/>';
           infowindow.setContent(content);
         },
         error: function() {
