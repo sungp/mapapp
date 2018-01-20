@@ -11,8 +11,7 @@
         <hr>
         <div>
           <span class="text">Filter Your Locations</span>
-          <input id="filter-text" type="text" placeholder="filter">
-          <input id="filter" type="button" value="Filter" data-bind="click: showListing">
+          <input id="filter-text" data-bind="textInput: filterKeyword" autofocus>
         </div>
         <hr>
         <ul id="location-list" data-bind="foreach: filteredLocations">

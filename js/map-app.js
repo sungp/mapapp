@@ -276,10 +276,9 @@ var ViewModel = function() {
     setTimeout(function(){ location.marker.setAnimation(null); }, 750);
   };
 
-  this.filter = ko.observable("");
+  this.filterKeyword = ko.observable('');
 
   this.showListing = function() {
-    self.filter(document.getElementById("filter-text").value);
     self.locations().forEach(function(location) {
       location.marker.setMap(null);
     });
@@ -292,7 +291,7 @@ var ViewModel = function() {
 
 
   this.filteredLocations = ko.computed(function() {
-    var filter = self.filter().toLowerCase();
+    var filter = self.filterKeyword().toLowerCase();
     if (!filter) {
       return self.locations();
     } else {
