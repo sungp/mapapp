@@ -124,7 +124,7 @@ var ViewModel = function() {
 
   // These are the real estate listings that will be shown to the user.
   // Normally we'd have these in a database instead.
-  var largeInfowindow = new google.maps.InfoWindow();
+  this.infowindow = new google.maps.InfoWindow();
 
   // Style the markers a bit. This will be our listing marker icon.
   var defaultIcon = self.makeMarkerIcon('0091ff');
@@ -136,15 +136,15 @@ var ViewModel = function() {
   // This function populates the infowindow when the marker is clicked. We'll only allow
   // one infowindow which will open at the marker that is clicked, and populate based
   // on that markers position.
-  this.populateInfoWindow = function(marker, infowindow, id) {
+  this.populateInfoWindow = function(marker, id) {
     // Check to make sure the infowindow is not already opened on this marker.
-    if (infowindow.marker != marker) {
+    if (self.infowindow.marker != marker) {
       // Clear the infowindow content to give the streetview time to load.
-      infowindow.setContent('');
-      infowindow.marker = marker;
+      self.infowindow.setContent('');
+      self.infowindow.marker = marker;
       // Make sure the marker property is cleared if the infowindow is closed.
-      infowindow.addListener('closeclick', function() {
-        infowindow.marker = null;
+      self.infowindow.addListener('closeclick', function() {
+        self.infowindow.marker = null;
       });
 
       var foursquareURL = apiURL + id + '?client_id=' + foursquareClientID +  '&client_secret=' + foursquareSecret +'&v=' + foursquareVersion;
@@ -166,25 +166,25 @@ var ViewModel = function() {
             content = content + '<div>' + ratingStr + '</div>';
           }
           content = content + '<img src="img/Powered-by-Foursquare-full-color-small.png"/>';
-          infowindow.setContent(content);
+          self.infowindow.setContent(content);
         },
         error: function() {
-          infowindow.setContent('<div>Service Temporary Unavailable.</div><div>Please Try Again Later.</div>');
+          self.infowindow.setContent('<div>Service Temporary Unavailable.</div><div>Please Try Again Later.</div>');
         }
 
       });
 
       // Open the infowindow on the correct marker.
-      infowindow.open(map, marker);
+      self.infowindow.open(map, marker);
     }
   };
 
   this.locations = ko.observableArray([]);
   // The following group uses the location array to create an array of markers on initialize.
-  initLocations.forEach(function(location, index) {
+  initLocations.forEach(function(data, index) {
     // Get the position from the location array.
-    var position = location.location;
-    var title = location.title;
+    var position = data.location;
+    var title = data.title;
     // Create a marker per location, and put into markers array.
     var marker = new google.maps.Marker({
       position: position,
@@ -193,10 +193,13 @@ var ViewModel = function() {
       icon: defaultIcon,
       id: index
     });
+    var location = new Location(data, marker); 
     // Create an onclick event to open the large infowindow at each marker.
-    marker.addListener('click', function() {
-      self.selectloc(this); 
-    });
+    marker.addListener('click', (function(location) { 
+      return function() {
+        self.selectloc(location); 
+      }
+    })(location));
     // Two event listeners - one for mouseover, one for mouseout,
     // to change the colors back and forth.
     marker.addListener('mouseover', function() {
@@ -205,11 +208,12 @@ var ViewModel = function() {
     marker.addListener('mouseout', function() {
       this.setIcon(defaultIcon);
     });
-    self.locations().push(new Location(location, marker)); 
+    marker.setMap(self.map);
+    self.locations().push(location);
   });
 
   this.selectloc = function(location) {
-    self.populateInfoWindow(location.marker, largeInfowindow, location.id);
+    self.populateInfoWindow(location.marker, location.id);
     if (location.marker.getAnimation() !== null) {
       location.marker.setAnimation(null);
     } 
@@ -226,10 +230,10 @@ var ViewModel = function() {
           return location.marker.title.toLowerCase().indexOf(filter) != -1;
         });
     self.locations().forEach(function(location) {
-      location.marker.setMap(null);
+      location.marker.setVisible(false);
     });
     filtered.forEach(function(location) { 
-      location.marker.setMap(self.map);
+      location.marker.setVisible(true);
       self.bounds.extend(location.marker.position);
     });
     self.map.fitBounds(self.bounds) ;
