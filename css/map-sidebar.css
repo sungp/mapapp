@@ -35,9 +35,10 @@ hr {
 }
 
 #map {
+    top:30px;
     bottom:0px;
     height: 100%;
-    left: 362px;
+    left: 0px;
     position: absolute;
     right: 0px;
 }
@@ -59,7 +60,10 @@ hr {
 }
 
 #filter-text {
-    width: 84%;
+    height: 100%;
+    width: 80%;
+    margin-left: 30px;
+    margin-right: 10px;
 }
 
 .text {
