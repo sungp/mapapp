@@ -219,28 +219,20 @@ var ViewModel = function() {
 
   this.filterKeyword = ko.observable('');
 
-  this.showListing = function() {
+  this.filteredLocations = ko.computed(function() {
+    var filter = self.filterKeyword().toLowerCase();
+    var filtered = (!filter) ? self.locations() :
+        ko.utils.arrayFilter(self.locations(), function(location) {
+          return location.marker.title.toLowerCase().indexOf(filter) != -1;
+        });
     self.locations().forEach(function(location) {
       location.marker.setMap(null);
     });
-    self.filteredLocations().forEach(function(location) { 
+    filtered.forEach(function(location) { 
       location.marker.setMap(self.map);
       self.bounds.extend(location.marker.position);
     });
     self.map.fitBounds(self.bounds) ;
-  };
-
-
-  this.filteredLocations = ko.computed(function() {
-    var filter = self.filterKeyword().toLowerCase();
-    if (!filter) {
-      return self.locations();
-    } else {
-      return ko.utils.arrayFilter(self.locations(), function(location) {
-        return location.marker.title.toLowerCase().indexOf(filter) != -1;
-      });
-    }
+    return filtered; 
   });
-
-  this.showListing();
 };
